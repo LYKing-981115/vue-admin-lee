@@ -121,25 +121,37 @@ export default {
         })
         },
         toAddHandler(){
+             this.form={
+                type:"customer"
+            }
             this.title="录入员工信息"
             this.visible=true;
         },
         closeModalHandler(){
             this.visible=false;
         },
-        toDeleteHandler(id){
+       toDeleteHandler(id){
+            //先确认
         this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
+            //调用后台接口完成删除操作
+            let url="http://localhost:6677/waiter/deleteById?id="+id
+            request.get(url).then((response)=>{
+                //刷新数据
+                this.loadData();
+                //提示结果
+                this.$message({
+                type: 'success',
+                message:response.message
+            });
+            })
         })
         },
         toUpdateHandler(row){
+            this.form=row;
             this.title="修改员工信息"
             this.visible=true
         }

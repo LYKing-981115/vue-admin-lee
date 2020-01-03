@@ -11,8 +11,8 @@
             <el-table-column label="所属产品" prop="categoryId"></el-table-column>
             <el-table-column label="操作" fixed="right">
                 <template v-slot="slot">
-                    <a href="" @click.prevent="toDeleteHandler">删除</a>
-                    <a href="" @click.prevent="toUpdateHandler">修改</a>
+                    <a href="" @click.prevent="toDeleteHandler(slot.row.id)">删除</a>
+                    <a href="" @click.prevent="toUpdateHandler(slot.row)">修改</a>
                 </template>
             </el-table-column>
         </el-table>
@@ -118,19 +118,29 @@ export default {
          closeModalHandler(){
             this.visible=false;
         },
-        toDeleteHandler(){
-            this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        toDeleteHandler(id){
+            //先确认
+        this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
+            //调用后台接口完成删除操作
+            let url="http://localhost:6677/product/deleteById?id="+id
+            request.get(url).then((response)=>{
+                //刷新数据
+                this.loadData();
+                //提示结果
+                this.$message({
+                type: 'success',
+                message:response.message
+            });
+            })
+          
         })
         },
-        toUpdateHandler(){
+        toUpdateHandler(row){
+            this.form=row;
             this.title="更新栏目信息";
             this.visible=true;
         }
